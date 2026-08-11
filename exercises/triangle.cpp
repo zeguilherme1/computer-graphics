@@ -1,30 +1,11 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
-#include "window.hpp"
 #include <array>
 #include <cctype>
 #include <cstdlib>
 #include <iostream>
-
-void createAndSetBuffer(float vertices[]) {
-    // creates a buffer and copy the vertice array to the gpu
-    std::cout << sizeof(vertices) << std::endl;
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-}
-
-void checkCompilationStatus(unsigned int vertexShader) {
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cerr << "ERROR" << infoLog << std::endl;
-    }
-}
+#include "utils.hpp"
+#include "window.hpp"
 
 int main(int argc, char *argv[]) {
     GLFWwindow *window = initWindow();
@@ -36,9 +17,11 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
-
-    createAndSetBuffer(vertices);
+    float vertices[] = {
+		-0.5f, -0.5f, 0.0f, 
+		0.5f, -0.5f, 0.0f, 
+		0.0f, 0.5f, 0.0f
+	};
 
     const char *vertexShaderSource =
         "#version 330 core\n"
@@ -73,24 +56,39 @@ int main(int argc, char *argv[]) {
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-    glUseProgram(shaderProgram);
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // render loop
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+	
+	unsigned int VBO = createAndSetBuffer(vertices, sizeof(vertices));
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VAO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// render loop
     while (!glfwWindowShouldClose(window)) {
         processInput(window); // input
 
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);			
+	
         // check and call events and swap the buffers
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
 
+	
     glfwTerminate();
     return 0;
 }
