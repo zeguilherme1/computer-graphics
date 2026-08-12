@@ -1,5 +1,17 @@
 #pragma once
 
+void multMatrix(const float a[16], const float b[16], float result[16]) {
+    for (int col = 0; col < 4; col++) {
+        for (int row = 0; row < 4; row++) {
+            result[col * 4 + row] = 0.0f;
+
+            for (int k = 0; k < 4; k++) {
+                result[col * 4 + row] += a[k * 4 + row] * b[col * 4 + k];
+            }
+        }
+    }
+}
+
 void checkCompilationStatus(unsigned int vertexShader) {
     int success;
     char infoLog[512];
@@ -40,13 +52,17 @@ unsigned int initShaders() {
 
     const char *vertexShaderSource =
         "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
+        "\n"
+        "layout (location = 0) in vec3 position;\n"
+        "\n"
+        "uniform mat4 mat_transformation;\n"
+        "\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
+        "    gl_Position = mat_transformation * vec4(position, 1.0);\n"
+        "}\n";
 
-    unsigned int vertexShader;
+    int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
@@ -54,10 +70,11 @@ unsigned int initShaders() {
 
     const char *fragmentShaderSource =
         "#version 330 core\n"
-        "out vec4 FragColor;\n"
+        "out vec4 FragColor;"
+        "uniform vec4 color;\n"
         "void main()\n"
         "{\n"
-        "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+        "    FragColor = color;\n"
         "}\0";
 
     unsigned int fragmentShader;
