@@ -1,4 +1,9 @@
 #pragma once
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <cstdlib>
+#include <sstream>
 
 void multMatrix(const float a[16], const float b[16], float result[16]) {
     for (int col = 0; col < 4; col++) {
@@ -12,13 +17,13 @@ void multMatrix(const float a[16], const float b[16], float result[16]) {
     }
 }
 
-void checkCompilationStatus(unsigned int vertexShader) {
+void checkCompilationStatus(unsigned int vertex_shader) {
     int success;
     char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
         std::cerr << "ERROR" << infoLog << std::endl;
     }
 }
@@ -50,47 +55,42 @@ unsigned int initShaders() {
     // this function setup all shaders
     // including vertex shader and fragment shader
 
-    const char *vertexShaderSource =
-        "#version 330 core\n"
-        "\n"
-        "layout (location = 0) in vec3 position;\n"
-        "\n"
-        "uniform mat4 mat_transformation;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = mat_transformation * vec4(position, 1.0);\n"
-        "}\n";
 
-    int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    checkCompilationStatus(vertexShader);
+        // should refactor this filepath method
+    std::ifstream vertex_shader_file("/home/zegui/computer-graphics/shaders/vertex.glsl");
+    std::stringstream vertex_buffer;
+    vertex_buffer << vertex_shader_file.rdbuf();
+    std::string vertex_shader_source = vertex_buffer.str();
+    vertex_shader_file.close();
 
-    const char *fragmentShaderSource =
-        "#version 330 core\n"
-        "out vec4 FragColor;"
-        "uniform vec4 color;\n"
-        "void main()\n"
-        "{\n"
-        "    FragColor = color;\n"
-        "}\0";
+    const char* vertex_source = vertex_shader_source.c_str();
+    unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_source, NULL);
+    glCompileShader(vertex_shader);
+    checkCompilationStatus(vertex_shader);
 
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    checkCompilationStatus(fragmentShader);
+        // we should refactor this too
+    std::ifstream fragment_shader_file("/home/zegui/computer-graphics/shaders/fragment.glsl");
+    std::stringstream fragment_buffer;
+    fragment_buffer << fragment_shader_file.rdbuf();
+    std::string fragment_shader_source = fragment_buffer.str();
+    fragment_shader_file.close();
 
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    const char* fragment_source = fragment_shader_source.c_str();
+    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_source, NULL);
+    glCompileShader(fragment_shader);
+    checkCompilationStatus(fragment_shader);
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    unsigned int shader_program;
+    shader_program = glCreateProgram();
+    glAttachShader(shader_program, vertex_shader);
+    glAttachShader(shader_program, fragment_shader);
+    glLinkProgram(shader_program);
 
-    return shaderProgram;
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+
+    return shader_program;
 }
+

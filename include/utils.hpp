@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include <string>
+#include <vector>
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
@@ -15,6 +16,33 @@ void multMatrix(const float a[16], const float b[16], float result[16]) {
             }
         }
     }
+}
+
+void generateTranslationMatrix(
+    float tx,
+    float ty,
+    float tz,
+    float result[16]
+) {
+    result[0]  = 1.0f;
+    result[1]  = 0.0f;
+    result[2]  = 0.0f;
+    result[3]  = tx;
+
+    result[4]  = 0.0f;
+    result[5]  = 1.0f;
+    result[6]  = 0.0f;
+    result[7]  = ty;
+
+    result[8]  = 0.0f;
+    result[9]  = 0.0f;
+    result[10] = 1.0f;
+    result[11] = tz;
+
+    result[12] = 0.0f;
+    result[13] = 0.0f;
+    result[14] = 0.0f;
+    result[15] = 1.0f;
 }
 
 void checkCompilationStatus(unsigned int vertex_shader) {
