@@ -1,15 +1,7 @@
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
-#include <fstream>
-#include <string>
 #include <vector>
 #include <cmath>
-#include <iostream>
-#include <cstdlib>
-#include <sstream>
 #include "cone.hpp"
 #define PI M_PI
-
 
 // x = r cos theta
 // y = r sin theta
@@ -41,9 +33,9 @@ std::vector<float> Cone::generateVertices(unsigned int sectorCount, float radius
 std::vector<unsigned int> Cone::generateIndices(unsigned int sectorCount) {
     std::vector<unsigned int> indices;
 
-    for (int indice = 0; indice <= sectorCount; indice++) {
-        unsigned int nextIndice = (indice + 1) % sectorCount;
-        indices.push_back(indice);
+    for (int i = 0; i <= sectorCount; i++) {
+        unsigned int nextIndice = (i + 1) % sectorCount;
+        indices.push_back(i);
         indices.push_back(nextIndice);
         indices.push_back(sectorCount);
     }

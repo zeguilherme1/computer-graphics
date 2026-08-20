@@ -1,9 +1,7 @@
 #pragma once
 #ifndef SPHERE_H
 #define SPHERE_H
-#include <cmath>
 #include <vector>
-#define PI M_PI
 
 std::vector<float> generateSphere();
 std::vector<unsigned int> generateSphereIndices();
