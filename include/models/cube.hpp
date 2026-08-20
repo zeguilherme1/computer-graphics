@@ -1,24 +1,14 @@
 #pragma once
+#ifndef CUBE_H
+#define CUBE_H
 #include <vector>
 
-std::vector<float> generateCube() {
-    std::vector<float> vertices = {-0.2f, -0.2f, 0.2f,  0.2f,  -0.2f, 0.2f,
-                        -0.2f, 0.2f,  0.2f,  0.2f,  0.2f,  0.2f,
+class Cube {
+  public:
+    std::vector<float> vertices;
 
-                        0.2f,  -0.2f, 0.2f,  0.2f,  -0.2f, -0.2f,
-                        0.2f,  0.2f,  0.2f,  0.2f,  0.2f,  -0.2f,
+  private:
+    std::vector<float> generateVertices();
+};
 
-                        0.2f,  -0.2f, -0.2f, -0.2f, -0.2f, -0.2f,
-                        0.2f,  0.2f,  -0.2f, -0.2f, 0.2f,  -0.2f,
-
-                        -0.2f, -0.2f, -0.2f, -0.2f, -0.2f, 0.2f,
-                        -0.2f, 0.2f,  -0.2f, -0.2f, 0.2f,  0.2f,
-
-                        -0.2f, -0.2f, -0.2f, 0.2f,  -0.2f, -0.2f,
-                        -0.2f, -0.2f, 0.2f,  0.2f,  -0.2f, 0.2f,
-
-                        -0.2f, 0.2f,  0.2f,  0.2f,  0.2f,  0.2f,
-                        -0.2f, 0.2f,  -0.2f, 0.2f,  0.2f,  -0.2f};
-
-    return vertices;
-}
+#endif
