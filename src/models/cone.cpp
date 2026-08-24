@@ -1,6 +1,6 @@
 #include <vector>
 #include <cmath>
-#include "cone.hpp"
+#include "../../include/models/cone.hpp"
 #define PI M_PI
 
 // x = r cos theta
@@ -13,7 +13,7 @@ std::vector<float> Cone::generateVertices(unsigned int sectorCount, float radius
 
     std::vector<float> vertices;
 
-    for (int i = 0; i <= sectorCount; i++) {
+    for (int i = 0; i < sectorCount; i++) {
         float theta = (2 * PI) * float(i) / sectorCount;
         x = radius * std::cos(theta);
         y = radius * std::sin(theta);
@@ -33,7 +33,7 @@ std::vector<float> Cone::generateVertices(unsigned int sectorCount, float radius
 std::vector<unsigned int> Cone::generateIndices(unsigned int sectorCount) {
     std::vector<unsigned int> indices;
 
-    for (int i = 0; i <= sectorCount; i++) {
+    for (int i = 0; i < sectorCount; i++) {
         unsigned int nextIndice = (i + 1) % sectorCount;
         indices.push_back(i);
         indices.push_back(nextIndice);
