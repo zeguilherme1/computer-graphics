@@ -6,6 +6,7 @@
 class Cube {
   public:
     std::vector<float> vertices;
+    Cube();
 
   private:
     std::vector<float> generateVertices();

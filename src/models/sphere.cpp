@@ -1,4 +1,4 @@
-#include "sphere.hpp"
+#include "../../include/models/sphere.hpp"
 #include <cmath>
 #include <vector>
 #define PI M_PI
@@ -17,7 +17,7 @@ std::vector<float> Sphere::generateVertices(float sectorCount, float stackCount,
         xy = radius * cosf(stack_angle);
         z = radius * sinf(stack_angle);
 
-        for (int j = 0; j <= sectorCount; j++) {
+        for (int j = 0; j < sectorCount; j++) {
             sectorAngle = j * sectorStep;
 
             x = xy * cosf(sectorAngle);

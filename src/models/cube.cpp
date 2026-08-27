@@ -1,4 +1,4 @@
-#include "cube.hpp"
+#include "../../include/models/cube.hpp"
 #include <vector>
 
 std::vector<float> Cube::generateVertices() {

@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 #include <sstream>
 
 void multMatrix(const float a[16], const float b[16], float result[16]) {
@@ -28,22 +29,38 @@ void generateTranslationMatrix(
     result[0]  = 1.0f;
     result[1]  = 0.0f;
     result[2]  = 0.0f;
-    result[3]  = tx;
+    result[3]  = 0.0f;
 
     result[4]  = 0.0f;
     result[5]  = 1.0f;
     result[6]  = 0.0f;
-    result[7]  = ty;
+    result[7]  = 0.0f;
 
     result[8]  = 0.0f;
     result[9]  = 0.0f;
     result[10] = 1.0f;
-    result[11] = tz;
+    result[11] = 0.0f;
 
-    result[12] = 0.0f;
-    result[13] = 0.0f;
-    result[14] = 0.0f;
+    result[12] = tx;
+    result[13] = ty;
+    result[14] = tz;
     result[15] = 1.0f;
+}
+
+void generateRotationXMatrix(float angle, float result[16]) {
+    for (int i = 0; i < 16; i++) result[i] = 0.0f;
+
+    
+    result[0] = 1.0f;
+    result[15] = 1.0f;
+
+    float c = std::cos(angle);
+    float s = std::sin(angle);
+
+    result[5] = c;
+    result[6] = s;
+    result[9] = -s;
+    result[10] = c;
 }
 
 void checkCompilationStatus(unsigned int vertex_shader) {

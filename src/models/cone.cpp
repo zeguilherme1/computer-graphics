@@ -8,7 +8,7 @@
 // z = -(h * 0.5)
 // theta = 2pi * i / sectorCount
 
-std::vector<float> Cone::generateVertices(unsigned int sectorCount, float radius, float height) {
+std::vector<float> Cone::generateVertices(unsigned int sectorCount, float height, float radius) {
     float x, y, z;
 
     std::vector<float> vertices;
@@ -44,6 +44,6 @@ std::vector<unsigned int> Cone::generateIndices(unsigned int sectorCount) {
 }
 
 Cone::Cone(unsigned int sectorCount, float radius, float height) {
-    vertices = generateVertices(sectorCount, radius, height);
+    vertices = generateVertices(sectorCount, height, radius);
     indices = generateIndices(sectorCount);
 }
