@@ -6,7 +6,9 @@
 #include "../include/window.hpp"
 #include "../include/models/tree.hpp"
 #include "../include/models/snowman.hpp"
-
+#include "../include/models/cloud.hpp"
+#include "../include/models/house.hpp"
+#include "../include/models/biscoito.hpp"
 int main() {
     GLFWwindow *window = initWindow();
     glfwMakeContextCurrent(window);
@@ -18,6 +20,9 @@ int main() {
 
     Tree arvore;
     Snowman boneco;
+    House house;
+    Biscoito biscoito;
+    Cloud cloud;
 
     unsigned int shaderProgram = initShaders();
     int modelLoc = glGetUniformLocation(shaderProgram, "model");
@@ -59,6 +64,40 @@ int main() {
         multMatrix(snowmanTrans, globalRot, snowmanModel);
         
         boneco.draw(shaderProgram, snowmanModel, modelLoc, colorLoc);
+
+        //House
+        glUniform4f(colorLoc, 0.95f, 0.65f, 0.8f, 1.0f);
+        house.mesh->draw(house.wallIndexOffset, house.wallIndexCount);
+
+        glUniform4f(colorLoc, 0.86f, 0.070f, 0.95f, 1.0f);
+        house.mesh->draw(house.roofIndexOffset, house.roofIndexCount);
+
+        glUniform4f(colorLoc, 0.62f, 0.87f, 0.96f, 1.0f);
+        house.mesh->draw(house.windowIndexOffset, house.windowIndexCount);
+
+        glUniform4f(colorLoc, 1.0f, 0.90f, 0.45f, 1.0f);
+        house.mesh->draw(house.doorIndexOffset,house.doorIndexCount);
+
+        glUniform4f(colorLoc, 0.86f, 0.070f, 0.95f, 1.0f);
+        house.mesh->draw(house.handleIndexOffset, house.handleIndexCount);
+
+        //Biscuit
+        glUniform4f(colorLoc, 0.65f, 0.38f, 0.18f, 1.0f);
+        biscoito.mesh->draw(biscoito.bodyIndexOffset, biscoito.bodyIndexCount);
+
+        glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+        biscoito.mesh->draw(biscoito.eyesIndexOffset, biscoito.eyesIndexCount);
+
+        glUniform4f(colorLoc, 0.5f, 0.1f, 0.7f, 1.0f);
+        biscoito.mesh->draw(biscoito.buttonsIndexOffset, biscoito.buttonsIndexCount);
+
+        glUniform4f(colorLoc, 0.9f, 0.1f, 0.2f, 1.0f);
+        glLineWidth(2.5f);
+        biscoito.mesh->draw(biscoito.mouthVertexOffset, biscoito.mouthVertexCount, GL_LINE_STRIP);
+
+        //Cloud 
+        glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+        cloud.mesh->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
