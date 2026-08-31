@@ -1,4 +1,4 @@
-#include <glad/gl.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
@@ -44,44 +44,40 @@ int main() {
         float globalRot[16];
         generateRotationYMatrix(angleY, globalRot);
 
+        //Tree
+        float treeTrans[16], treeScale[16], treeRot[16], treeModel[16], temp[16]; 
+        generateTranslationMatrix(-0.1f, -0.06f, 0.0f, treeTrans);
+        generateScaleMatrix(1.7f, 1.7f, 1.7f, treeScale);
+        generateRotationXMatrix(-1.5708f, treeRot);
 
-        float treeRotX[16];
-        generateRotationXMatrix(-1.5708f, treeRotX); 
-
-        float treeTrans[16];
-        generateTranslationMatrix(-0.5f, 0.0f, 0.0f, treeTrans);
-        
-        float treeModel[16];
-
-        multMatrix(treeTrans, treeRotX, treeModel);
-        
+        multMatrix(treeRot, treeScale, temp);
+        multMatrix(treeTrans, temp, treeModel);
+    
         glUniform4f(colorLoc, 0.1f, 0.6f, 0.2f, 1.0f);
         arvore.draw(shaderProgram, treeModel, modelLoc);
 
-        float snowmanTrans[16], snowmanModel[16];
-        generateTranslationMatrix(0.5f, 0.0f, 0.0f, snowmanTrans);
+        //Snowman
+        float snowmanTrans[16], snowmanScale[16], snowmanRot[16], snowmanModel[16], temp1[16];
+        generateTranslationMatrix(-0.7f, -0.4f, 0.0f, snowmanTrans);
+        generateScaleMatrix(0.5f, 0.5f, 0.5f, snowmanScale);
+        generateRotationYMatrix(angleY, snowmanRot);
 
-        multMatrix(snowmanTrans, globalRot, snowmanModel);
+        multMatrix(snowmanRot, snowmanScale, temp1);
+        multMatrix(snowmanTrans, temp1, snowmanModel);
         
         boneco.draw(shaderProgram, snowmanModel, modelLoc, colorLoc);
 
-        //House
-        glUniform4f(colorLoc, 0.95f, 0.65f, 0.8f, 1.0f);
-        house.mesh->draw(house.wallIndexOffset, house.wallIndexCount);
-
-        glUniform4f(colorLoc, 0.86f, 0.070f, 0.95f, 1.0f);
-        house.mesh->draw(house.roofIndexOffset, house.roofIndexCount);
-
-        glUniform4f(colorLoc, 0.62f, 0.87f, 0.96f, 1.0f);
-        house.mesh->draw(house.windowIndexOffset, house.windowIndexCount);
-
-        glUniform4f(colorLoc, 1.0f, 0.90f, 0.45f, 1.0f);
-        house.mesh->draw(house.doorIndexOffset,house.doorIndexCount);
-
-        glUniform4f(colorLoc, 0.86f, 0.070f, 0.95f, 1.0f);
-        house.mesh->draw(house.handleIndexOffset, house.handleIndexCount);
-
         //Biscuit
+        float biscuitTrans[16], biscuitScale[16], biscuitRot[16], biscuitModel[16], biscuitTemp[16];
+        generateTranslationMatrix(0.4f, -0.5f, 0.0f, biscuitTrans);
+        generateScaleMatrix(0.4f, 0.4f, 0.4f, biscuitScale);
+        generateRotationYMatrix(2.7, biscuitRot);
+
+        multMatrix(biscuitRot, biscuitScale, biscuitTemp);
+        multMatrix(biscuitTrans, biscuitTemp, biscuitModel);
+        
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, biscuitModel);
+
         glUniform4f(colorLoc, 0.65f, 0.38f, 0.18f, 1.0f);
         biscoito.mesh->draw(biscoito.bodyIndexOffset, biscoito.bodyIndexCount);
 
@@ -95,7 +91,41 @@ int main() {
         glLineWidth(2.5f);
         biscoito.mesh->draw(biscoito.mouthVertexOffset, biscoito.mouthVertexCount, GL_LINE_STRIP);
 
+        //House
+        float houseTrans[16], houseScale[16], houseRot[16], houseModel[16], houseTemp[16];
+        generateTranslationMatrix(0.6f, -0.5f, 0.4f, houseTrans);
+        generateScaleMatrix(3.4f, 3.4f, 3.4f, houseScale);
+        generateRotationYMatrix(2.338, houseRot);
+
+        multMatrix(houseRot, houseScale, houseTemp);
+        multMatrix(houseTrans, houseTemp, houseModel);
+        
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, houseModel);
+
+        glUniform4f(colorLoc, 0.95f, 0.65f, 0.8f, 1.0f);
+        house.mesh->draw(house.wallIndexOffset, house.wallIndexCount);
+
+        glUniform4f(colorLoc, 0.86f, 0.50f, 0.95f, 1.0f);
+        house.mesh->draw(house.roofIndexOffset, house.roofIndexCount);
+
+        glUniform4f(colorLoc, 0.62f, 0.87f, 0.96f, 1.0f);
+        house.mesh->draw(house.windowIndexOffset, house.windowIndexCount);
+
+        glUniform4f(colorLoc, 1.0f, 0.90f, 0.45f, 1.0f);
+        house.mesh->draw(house.doorIndexOffset,house.doorIndexCount);
+
+        glUniform4f(colorLoc, 0.86f, 0.50f, 0.95f, 1.0f);
+        house.mesh->draw(house.handleIndexOffset, house.handleIndexCount);
+
         //Cloud 
+        float cloudTrans[16], cloudScale[16], cloudModel[16];
+        generateTranslationMatrix(-0.4f, 0.7f, 0.0f, cloudTrans);
+        generateScaleMatrix(0.5f, 0.5f, 0.5f, cloudScale);
+
+        multMatrix(cloudTrans, cloudScale, cloudModel);
+        
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
+
         glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
         cloud.mesh->draw();
 

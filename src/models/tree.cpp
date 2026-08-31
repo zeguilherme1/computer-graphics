@@ -1,6 +1,6 @@
 #include "../../include/models/tree.hpp"
 #include "../../include/utils.hpp"
-#include <glad/gl.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
 Tree::Tree() : folhasData(64, 0.125f, 0.5f), troncoData(64, 0.03f, 0.25f) { 

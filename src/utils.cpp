@@ -1,4 +1,4 @@
-#include <glad/gl.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
 #include <string>
@@ -106,6 +106,14 @@ void generateRotationYMatrix(float angle, float result[16]) {
     result[10] = c;
 }
 
+void generateIdentityMatrix(float result[16]) {
+    for (int i = 0; i < 16; i++) result[i] = 0.0f;
+    
+    result[0] = 1.0f;
+    result[5] = 1.0f;
+    result[10] = 1.0f;
+    result[15] = 1.0f;
+} 
 
 void checkCompilationStatus(unsigned int vertex_shader) {
     int success;

@@ -1,7 +1,7 @@
 #include "../../include/models/snowman.hpp"
 #include "../../include/utils.hpp"
 #include "../../include/models/sphere.hpp"
-#include <glad/gl.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
 
