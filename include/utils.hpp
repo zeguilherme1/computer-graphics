@@ -10,10 +10,6 @@ void generateRotationYMatrix(float angle, float result[16]);
 
 void checkCompilationStatus(unsigned int vertex_shader);
 
-unsigned int createVBO(float vertices[], size_t size);
-
-unsigned int createVAO(unsigned int VBO);
-
 unsigned int initShaders();
 
 #endif
