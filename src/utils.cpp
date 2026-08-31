@@ -47,6 +47,33 @@ void generateTranslationMatrix(
     result[15] = 1.0f;
 }
 
+void generateScaleMatrix(
+    float sx,
+    float sy,
+    float sz,
+    float result[16]
+) {
+    result[0]  = sx;
+    result[1]  = 0.0f;
+    result[2]  = 0.0f;
+    result[3]  = 0.0f;
+
+    result[4]  = 0.0f;
+    result[5]  = sy;
+    result[6]  = 0.0f;
+    result[7]  = 0.0f;
+
+    result[8]  = 0.0f;
+    result[9]  = 0.0f;
+    result[10] = sz;
+    result[11] = 0.0f;
+
+    result[12] = 0.0f;
+    result[13] = 0.0f;
+    result[14] = 0.0f;
+    result[15] = 1.0f;
+}
+
 void generateRotationXMatrix(float angle, float result[16]) {
     for (int i = 0; i < 16; i++) result[i] = 0.0f;
 
@@ -61,7 +88,24 @@ void generateRotationXMatrix(float angle, float result[16]) {
     result[6] = s;
     result[9] = -s;
     result[10] = c;
+} 
+
+void generateRotationYMatrix(float angle, float result[16]) {
+    for (int i = 0; i < 16; i++) result[i] = 0.0f;
+
+    
+    result[5] = 1.0f;
+    result[15] = 1.0f;
+
+    float c = std::cos(angle);
+    float s = std::sin(angle);
+
+    result[0] = c;
+    result[2] = -s;
+    result[8] = s;
+    result[10] = c;
 }
+
 
 void checkCompilationStatus(unsigned int vertex_shader) {
     int success;
@@ -104,7 +148,7 @@ unsigned int initShaders() {
     // including vertex shader and fragment shader
     
 	// should refactor this filepath method
-    std::ifstream vertex_shader_file("/home/zegui/computer-graphics/shaders/vertex.glsl");
+    std::ifstream vertex_shader_file("/home/lele/computer-graphics/shaders/vertex.glsl");
     std::stringstream vertex_buffer;
     vertex_buffer << vertex_shader_file.rdbuf();
     std::string vertex_shader_source = vertex_buffer.str();
@@ -117,7 +161,7 @@ unsigned int initShaders() {
     checkCompilationStatus(vertex_shader);
 
 	// we should refactor this too
-    std::ifstream fragment_shader_file("/home/zegui/computer-graphics/shaders/fragment.glsl");
+    std::ifstream fragment_shader_file("/home/lele/computer-graphics/shaders/fragment.glsl");
     std::stringstream fragment_buffer;
     fragment_buffer << fragment_shader_file.rdbuf();
     std::string fragment_shader_source = fragment_buffer.str();

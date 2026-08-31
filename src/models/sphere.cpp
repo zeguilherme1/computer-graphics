@@ -3,7 +3,7 @@
 #include <vector>
 #define PI M_PI
 
-std::vector<float> Sphere::generateVertices(float sectorCount, float stackCount,
+std::vector<float> Sphere::generateVertices(unsigned int sectorCount, unsigned int stackCount,
                                             float radius) {
     std::vector<float> vertices;
     float x, y, z, xy;
@@ -17,7 +17,7 @@ std::vector<float> Sphere::generateVertices(float sectorCount, float stackCount,
         xy = radius * cosf(stack_angle);
         z = radius * sinf(stack_angle);
 
-        for (int j = 0; j < sectorCount; j++) {
+        for (int j = 0; j <= sectorCount; j++) {
             sectorAngle = j * sectorStep;
 
             x = xy * cosf(sectorAngle);
@@ -31,8 +31,8 @@ std::vector<float> Sphere::generateVertices(float sectorCount, float stackCount,
     return vertices;
 }
 
-std::vector<unsigned int> Sphere::generateIndices(float sectorCount,
-                                                  float stackCount) {
+std::vector<unsigned int> Sphere::generateIndices(unsigned int sectorCount,
+                                                  unsigned int stackCount) {
     int k1, k2;
     std::vector<unsigned int> indices;
 
@@ -57,8 +57,8 @@ std::vector<unsigned int> Sphere::generateIndices(float sectorCount,
     return indices;
 }
 
-std::vector<unsigned int> Sphere::generateLineIndices(float sectorCount,
-                                                      float stackCount) {
+std::vector<unsigned int> Sphere::generateLineIndices(unsigned int sectorCount,
+                                                      unsigned int stackCount) {
     int k1, k2;
     std::vector<unsigned int> lineIndices;
 
@@ -79,7 +79,7 @@ std::vector<unsigned int> Sphere::generateLineIndices(float sectorCount,
     return lineIndices;
 }
 
-Sphere::Sphere(float sectorCount, float stackCount, float radius) {
+Sphere::Sphere(unsigned int sectorCount, unsigned int stackCount, float radius) {
     vertices = generateVertices(sectorCount, stackCount, radius);
     indices = generateIndices(sectorCount, stackCount);
     lineIndices = generateLineIndices(sectorCount, stackCount);

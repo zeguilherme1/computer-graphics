@@ -9,7 +9,7 @@ GLFWwindow *initWindow() {
         std::cerr << "Error trying to initialize the window" << std::endl;
     }
 
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1366, 768, "Hello World", NULL, NULL);
 
     if (!window) {
         glfwTerminate();

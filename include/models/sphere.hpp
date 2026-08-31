@@ -12,17 +12,17 @@ class Sphere {
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
     std::vector<unsigned int> lineIndices;
-    Sphere(float sectorCount, float stackCount, float radius);
+    Sphere(unsigned int sectorCount, unsigned int stackCount, float radius);
 
   private:
-    std::vector<float> generateVertices(float sectorCount, float stackCount,
+    std::vector<float> generateVertices(unsigned int sectorCount, unsigned int stackCount,
                                         float radius);
 
-    std::vector<unsigned int> generateIndices(float sectorCount,
-                                              float stackCount);
+    std::vector<unsigned int> generateIndices(unsigned int sectorCount,
+                                              unsigned int stackCount);
 
-    std::vector<unsigned int> generateLineIndices(float sectorCount,
-                                                  float stackCount);
+    std::vector<unsigned int> generateLineIndices(unsigned int sectorCount,
+                                                  unsigned int stackCount);
 };
 
 #endif
