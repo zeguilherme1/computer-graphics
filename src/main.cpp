@@ -39,17 +39,24 @@ int main() {
         float globalRot[16];
         generateRotationYMatrix(angleY, globalRot);
 
-        float treeTrans[16], treeModel[16];
+
+        float treeRotX[16];
+        generateRotationXMatrix(-1.5708f, treeRotX); 
+
+        float treeTrans[16];
         generateTranslationMatrix(-0.5f, 0.0f, 0.0f, treeTrans);
-        multMatrix(globalRot, treeTrans, treeModel);
+        
+        float treeModel[16];
+
+        multMatrix(treeTrans, treeRotX, treeModel);
         
         glUniform4f(colorLoc, 0.1f, 0.6f, 0.2f, 1.0f);
         arvore.draw(shaderProgram, treeModel, modelLoc);
 
-
         float snowmanTrans[16], snowmanModel[16];
         generateTranslationMatrix(0.5f, 0.0f, 0.0f, snowmanTrans);
-        multMatrix(globalRot, snowmanTrans, snowmanModel);
+
+        multMatrix(snowmanTrans, globalRot, snowmanModel);
         
         boneco.draw(shaderProgram, snowmanModel, modelLoc, colorLoc);
 
