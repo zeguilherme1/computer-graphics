@@ -34,20 +34,67 @@ int main() {
     int colorLoc = glGetUniformLocation(shaderProgram, "color");
 
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.024f, 0.118f, 0.412f, 1.0f); 
+    glClearColor(0.024f, 0.118f, 0.412f, 1.0f);
 
     float angleY = 0.0f;
 
+    bool showMesh = false;
+    bool pWasPressed = false;
+
+    // Variáveis de estado inicial do biscoito
+    float biscoitoPosY = -0.72f;
+    float biscoitoScaleVal = 0.2f;
+
     while (!glfwWindowShouldClose(window)) {
-        
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) angleY += 0.02f; 
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) angleY -= 0.02f; 
-        
+
+        // Controle de rotação da árvore/boneco de neve
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            angleY += 0.02f;
+
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            angleY -= 0.02f;
+
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwDestroyWindow(window);
+
+        // Controles da translação/escala do biscoito
+        bool shiftPressed = (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || 
+                            (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
+
+        if (shiftPressed) {
+            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+                biscoitoScaleVal += 0.01f;
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+                biscoitoScaleVal -= 0.01f;
+                
+            // Evita escala negativa
+            if (biscoitoScaleVal < 0.01f) biscoitoScaleVal = 0.01f; 
+        } else {
+            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+                biscoitoPosY += 0.01f;
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+                biscoitoPosY -= 0.01f;
+        }
+
+        // Controle da exibicão da malha
+        bool pPressed = glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS;
+        if (pPressed && !pWasPressed) {
+            showMesh = !showMesh;
+        }
+        pWasPressed = pPressed;
+
+        if (showMesh) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        // Tree
-        float treeTrans[16], treeScale[16], treeRotX[16], treeRotY[16], treeModel[16], tempTree[16], tempTree1[16];
+        // Renderização da árvore
+        float treeTrans[16], treeScale[16], treeRotX[16], treeRotY[16];
+        float treeModel[16], tempTree[16], tempTree1[16];
 
         generateTranslationMatrix(-0.16f, -0.06f, 0.0f, treeTrans);
         generateScaleMatrix(1.7f, 1.7f, 1.7f, treeScale);
@@ -59,9 +106,12 @@ int main() {
         multMatrix(treeTrans, tempTree1, treeModel);
 
         arvore.draw(shaderProgram, treeModel, modelLoc, colorLoc);
-        
-        //Snowman
-        float snowmanTrans[16], snowmanScale[16], snowmanRot[16], snowmanYRot[16], snowmanModel[16], tempSnowman[16], tempSnowman1[16];
+
+        // Renderização do boneco de neve
+        float snowmanTrans[16], snowmanScale[16], snowmanRot[16];
+        float snowmanYRot[16], snowmanModel[16], tempSnowman[16];
+        float tempSnowman1[16];
+
         generateTranslationMatrix(-0.7f, -0.4f, 0.0f, snowmanTrans);
         generateScaleMatrix(0.5f, 0.5f, 0.5f, snowmanScale);
         generateRotationYMatrix(2.7f, snowmanYRot);
@@ -70,18 +120,21 @@ int main() {
         multMatrix(snowmanYRot, snowmanScale, tempSnowman);
         multMatrix(snowmanRot, tempSnowman, tempSnowman1);
         multMatrix(snowmanTrans, tempSnowman1, snowmanModel);
-        
+
         boneco.draw(shaderProgram, snowmanModel, modelLoc, colorLoc);
 
-        //Biscuit
-        float biscuitTrans[16], biscuitScale[16], biscuitRot[16], biscuitModel[16], biscuitTemp[16];
-        generateTranslationMatrix(0.15f, -0.72f, 0.0f, biscuitTrans);
-        generateScaleMatrix(0.2f, 0.2f, 0.2f, biscuitScale);
-        generateRotationYMatrix(2.7, biscuitRot);
+        // Renderização do biscoito
+        float biscuitTrans[16], biscuitScale[16], biscuitRot[16];
+        float biscuitModel[16], biscuitTemp[16];
+
+        // Atualizando as variáveis da posição do biscoito
+        generateTranslationMatrix(0.15f, biscoitoPosY, 0.0f, biscuitTrans);
+        generateScaleMatrix(biscoitoScaleVal, biscoitoScaleVal, biscoitoScaleVal, biscuitScale);
+        generateRotationYMatrix(2.7f, biscuitRot);
 
         multMatrix(biscuitRot, biscuitScale, biscuitTemp);
         multMatrix(biscuitTrans, biscuitTemp, biscuitModel);
-        
+
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, biscuitModel);
 
         glUniform4f(colorLoc, 0.85f, 0.639f, 0.392f, 1.0f);
@@ -97,15 +150,17 @@ int main() {
         glLineWidth(2.5f);
         biscoito.mesh->draw(biscoito.mouthVertexOffset, biscoito.mouthVertexCount, GL_LINE_STRIP);
 
-        //House
-        float houseTrans[16], houseScale[16], houseRot[16], houseModel[16], houseTemp[16];
+        // Renderização da casa
+        float houseTrans[16], houseScale[16], houseRot[16];
+        float houseModel[16], houseTemp[16];
+
         generateTranslationMatrix(0.6f, -0.5f, 0.4f, houseTrans);
         generateScaleMatrix(3.4f, 3.4f, 3.4f, houseScale);
-        generateRotationYMatrix(2.338, houseRot);
+        generateRotationYMatrix(2.338f, houseRot);
 
         multMatrix(houseRot, houseScale, houseTemp);
         multMatrix(houseTrans, houseTemp, houseModel);
-        
+
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, houseModel);
 
         glUniform4f(colorLoc, 0.96f, 0.9f, 0.58f, 1.0f);
@@ -118,50 +173,41 @@ int main() {
         house.mesh->draw(house.windowIndexOffset, house.windowIndexCount);
 
         glUniform4f(colorLoc, 0.78f, 0.573f, 0.412f, 1.0f);
-        house.mesh->draw(house.doorIndexOffset,house.doorIndexCount);
+        house.mesh->draw(house.doorIndexOffset, house.doorIndexCount);
 
         glUniform4f(colorLoc, 0.522f, 0.318f, 0.16f, 1.0f);
         house.mesh->draw(house.handleIndexOffset, house.handleIndexCount);
 
-        //CloudLeft
+        // Renderiza nuvens
         float cloudTrans[16], cloudScale[16], cloudModel[16];
+
         generateTranslationMatrix(-0.6f, 0.6f, 0.0f, cloudTrans);
         generateScaleMatrix(0.4f, 0.4f, 0.4f, cloudScale);
-
         multMatrix(cloudTrans, cloudScale, cloudModel);
-        
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
-
         glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
         cloudLeft.mesh->draw();
 
-        //CloudMiddle
         generateTranslationMatrix(0.0f, 0.7f, 0.0f, cloudTrans);
         generateScaleMatrix(0.5f, 0.5f, 0.5f, cloudScale);
         multMatrix(cloudTrans, cloudScale, cloudModel);
-
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
         glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
-        cloudLeft.mesh->draw();
+        cloudMiddle.mesh->draw();
 
-        //CloudRight
         generateTranslationMatrix(0.6f, 0.6f, 0.0f, cloudTrans);
         generateScaleMatrix(0.4f, 0.4f, 0.4f, cloudScale);
         multMatrix(cloudTrans, cloudScale, cloudModel);
-
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
         glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
-        cloudLeft.mesh->draw();
-        
-        //SnowFloor
+        cloudRight.mesh->draw();
+
+        // Desenha o chão da cena
         float floorTrans[16], floorScale[16], floorModel[16];
         generateTranslationMatrix(0.0f, -0.85f, 0.9f, floorTrans);
         generateScaleMatrix(1.6f, 0.8f, 1.6f, floorScale);
-
         multMatrix(floorTrans, floorScale, floorModel);
-        
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, floorModel);
-
         glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
         floor.mesh->draw();
 
