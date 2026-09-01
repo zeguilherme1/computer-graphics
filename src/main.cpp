@@ -9,6 +9,8 @@
 #include "../include/models/cloud.hpp"
 #include "../include/models/house.hpp"
 #include "../include/models/biscoito.hpp"
+#include "../include/models/snowFloor.hpp"
+
 int main() {
     GLFWwindow *window = initWindow();
     glfwMakeContextCurrent(window);
@@ -22,14 +24,17 @@ int main() {
     Snowman boneco;
     House house;
     Biscoito biscoito;
-    Cloud cloud;
+    Cloud cloudLeft;
+    Cloud cloudMiddle;
+    Cloud cloudRight;
+    SnowFloor floor;
 
     unsigned int shaderProgram = initShaders();
     int modelLoc = glGetUniformLocation(shaderProgram, "model");
     int colorLoc = glGetUniformLocation(shaderProgram, "color");
 
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.54f, 0.69f, 0.90f, 1.0f); 
+    glClearColor(0.024f, 0.118f, 0.412f, 1.0f); 
 
     float angleY = 0.0f;
 
@@ -41,36 +46,37 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        float globalRot[16];
-        generateRotationYMatrix(angleY, globalRot);
+        // Tree
+        float treeTrans[16], treeScale[16], treeRotX[16], treeRotY[16], treeModel[16], tempTree[16], tempTree1[16];
 
-        //Tree
-        float treeTrans[16], treeScale[16], treeRot[16], treeModel[16], temp[16]; 
-        generateTranslationMatrix(-0.1f, -0.06f, 0.0f, treeTrans);
+        generateTranslationMatrix(-0.16f, -0.06f, 0.0f, treeTrans);
         generateScaleMatrix(1.7f, 1.7f, 1.7f, treeScale);
-        generateRotationXMatrix(-1.5708f, treeRot);
+        generateRotationXMatrix(-1.5708f, treeRotX);
+        generateRotationYMatrix(angleY, treeRotY);
 
-        multMatrix(treeRot, treeScale, temp);
-        multMatrix(treeTrans, temp, treeModel);
-    
-        glUniform4f(colorLoc, 0.1f, 0.6f, 0.2f, 1.0f);
-        arvore.draw(shaderProgram, treeModel, modelLoc);
+        multMatrix(treeRotX, treeScale, tempTree);
+        multMatrix(treeRotY, tempTree, tempTree1);
+        multMatrix(treeTrans, tempTree1, treeModel);
 
+        arvore.draw(shaderProgram, treeModel, modelLoc, colorLoc);
+        
         //Snowman
-        float snowmanTrans[16], snowmanScale[16], snowmanRot[16], snowmanModel[16], temp1[16];
+        float snowmanTrans[16], snowmanScale[16], snowmanRot[16], snowmanYRot[16], snowmanModel[16], tempSnowman[16], tempSnowman1[16];
         generateTranslationMatrix(-0.7f, -0.4f, 0.0f, snowmanTrans);
         generateScaleMatrix(0.5f, 0.5f, 0.5f, snowmanScale);
+        generateRotationYMatrix(2.7f, snowmanYRot);
         generateRotationYMatrix(angleY, snowmanRot);
 
-        multMatrix(snowmanRot, snowmanScale, temp1);
-        multMatrix(snowmanTrans, temp1, snowmanModel);
+        multMatrix(snowmanYRot, snowmanScale, tempSnowman);
+        multMatrix(snowmanRot, tempSnowman, tempSnowman1);
+        multMatrix(snowmanTrans, tempSnowman1, snowmanModel);
         
         boneco.draw(shaderProgram, snowmanModel, modelLoc, colorLoc);
 
         //Biscuit
         float biscuitTrans[16], biscuitScale[16], biscuitRot[16], biscuitModel[16], biscuitTemp[16];
-        generateTranslationMatrix(0.4f, -0.5f, 0.0f, biscuitTrans);
-        generateScaleMatrix(0.4f, 0.4f, 0.4f, biscuitScale);
+        generateTranslationMatrix(0.15f, -0.72f, 0.0f, biscuitTrans);
+        generateScaleMatrix(0.2f, 0.2f, 0.2f, biscuitScale);
         generateRotationYMatrix(2.7, biscuitRot);
 
         multMatrix(biscuitRot, biscuitScale, biscuitTemp);
@@ -78,16 +84,16 @@ int main() {
         
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, biscuitModel);
 
-        glUniform4f(colorLoc, 0.65f, 0.38f, 0.18f, 1.0f);
+        glUniform4f(colorLoc, 0.85f, 0.639f, 0.392f, 1.0f);
         biscoito.mesh->draw(biscoito.bodyIndexOffset, biscoito.bodyIndexCount);
 
-        glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
+        glUniform4f(colorLoc, 0.96f, 0.918f, 0.855f, 1.0f);
         biscoito.mesh->draw(biscoito.eyesIndexOffset, biscoito.eyesIndexCount);
 
         glUniform4f(colorLoc, 0.5f, 0.1f, 0.7f, 1.0f);
         biscoito.mesh->draw(biscoito.buttonsIndexOffset, biscoito.buttonsIndexCount);
 
-        glUniform4f(colorLoc, 0.9f, 0.1f, 0.2f, 1.0f);
+        glUniform4f(colorLoc, 0.95f, 0.3f, 0.227f, 1.0f);
         glLineWidth(2.5f);
         biscoito.mesh->draw(biscoito.mouthVertexOffset, biscoito.mouthVertexCount, GL_LINE_STRIP);
 
@@ -102,32 +108,62 @@ int main() {
         
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, houseModel);
 
-        glUniform4f(colorLoc, 0.95f, 0.65f, 0.8f, 1.0f);
+        glUniform4f(colorLoc, 0.96f, 0.9f, 0.58f, 1.0f);
         house.mesh->draw(house.wallIndexOffset, house.wallIndexCount);
 
-        glUniform4f(colorLoc, 0.86f, 0.50f, 0.95f, 1.0f);
+        glUniform4f(colorLoc, 0.86f, 0.27f, 0.153f, 1.0f);
         house.mesh->draw(house.roofIndexOffset, house.roofIndexCount);
 
         glUniform4f(colorLoc, 0.62f, 0.87f, 0.96f, 1.0f);
         house.mesh->draw(house.windowIndexOffset, house.windowIndexCount);
 
-        glUniform4f(colorLoc, 1.0f, 0.90f, 0.45f, 1.0f);
+        glUniform4f(colorLoc, 0.78f, 0.573f, 0.412f, 1.0f);
         house.mesh->draw(house.doorIndexOffset,house.doorIndexCount);
 
-        glUniform4f(colorLoc, 0.86f, 0.50f, 0.95f, 1.0f);
+        glUniform4f(colorLoc, 0.522f, 0.318f, 0.16f, 1.0f);
         house.mesh->draw(house.handleIndexOffset, house.handleIndexCount);
 
-        //Cloud 
+        //CloudLeft
         float cloudTrans[16], cloudScale[16], cloudModel[16];
-        generateTranslationMatrix(-0.4f, 0.7f, 0.0f, cloudTrans);
-        generateScaleMatrix(0.5f, 0.5f, 0.5f, cloudScale);
+        generateTranslationMatrix(-0.6f, 0.6f, 0.0f, cloudTrans);
+        generateScaleMatrix(0.4f, 0.4f, 0.4f, cloudScale);
 
         multMatrix(cloudTrans, cloudScale, cloudModel);
         
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
 
-        glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
-        cloud.mesh->draw();
+        glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
+        cloudLeft.mesh->draw();
+
+        //CloudMiddle
+        generateTranslationMatrix(0.0f, 0.7f, 0.0f, cloudTrans);
+        generateScaleMatrix(0.5f, 0.5f, 0.5f, cloudScale);
+        multMatrix(cloudTrans, cloudScale, cloudModel);
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
+        glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
+        cloudLeft.mesh->draw();
+
+        //CloudRight
+        generateTranslationMatrix(0.6f, 0.6f, 0.0f, cloudTrans);
+        generateScaleMatrix(0.4f, 0.4f, 0.4f, cloudScale);
+        multMatrix(cloudTrans, cloudScale, cloudModel);
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
+        glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
+        cloudLeft.mesh->draw();
+        
+        //SnowFloor
+        float floorTrans[16], floorScale[16], floorModel[16];
+        generateTranslationMatrix(0.0f, -0.85f, 0.9f, floorTrans);
+        generateScaleMatrix(1.6f, 0.8f, 1.6f, floorScale);
+
+        multMatrix(floorTrans, floorScale, floorModel);
+        
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, floorModel);
+
+        glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
+        floor.mesh->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

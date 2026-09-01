@@ -35,6 +35,7 @@ protected:
         float height,
         float radius,
         int cornerSegments,
+        float angle = 0.0f,
         float z = 0.0f
     );
 

@@ -29,26 +29,46 @@ Biscoito::Biscoito() {
         0.50f
     );
 
+    float armLength    = 0.3f;
+    float armThickness = 0.12f;
+    float armRadius    = 0.05f;
+    int   armSegments  = 4;
+
+    float rightShoulderX = 0.13f;
+    float rightShoulderY = 0.23f;
+    float rightAngle     = -0.55f; 
+    float leftShoulderX = -0.13f;
+    float leftShoulderY =  0.23f;
+    float leftAngle     = static_cast<float>(M_PI) - rightAngle; 
+
+    float rightCenterX = rightShoulderX + (armLength * 0.5f) * std::cos(rightAngle);
+    float rightCenterY = rightShoulderY + (armLength * 0.5f) * std::sin(rightAngle);
+
+    float leftCenterX = leftShoulderX + (armLength * 0.5f) * std::cos(leftAngle);
+    float leftCenterY = leftShoulderY + (armLength * 0.5f) * std::sin(leftAngle);
+
     addRoundedRectangle(
         vertices,
         indices,
-        -0.22f,
-        0.15f,
-        0.25f,
-        0.12f,
-        0.05f,
-        4
+        leftCenterX,
+        leftCenterY,
+        armLength,
+        armThickness,
+        armRadius,
+        armSegments,
+        leftAngle
     );
 
     addRoundedRectangle(
         vertices,
         indices,
-        0.22f,
-        0.15f,
-        0.25f,
-        0.12f,
-        0.05f,
-        4
+        rightCenterX,
+        rightCenterY,
+        armLength,
+        armThickness,
+        armRadius,
+        armSegments,
+        rightAngle
     );
 
     addRoundedRectangle(
@@ -67,7 +87,7 @@ Biscoito::Biscoito() {
         indices,
         0.09f,
         -0.38f,
-        0.11f,
+        0.13f,
         0.45f,
         0.05f,
         4

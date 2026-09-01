@@ -86,6 +86,7 @@ void Objects2D::addRoundedRectangle(
     float height,
     float radius,
     int cornerSegments,
+    float angle,
     float z
 ) {
     unsigned int center = v.size() / 3;
@@ -97,11 +98,13 @@ void Objects2D::addRoundedRectangle(
     float hw = width / 2.0f - radius;
     float hh = height / 2.0f - radius;
 
-    float centers[4][2] = {
-        {cx + hw, cy + hh},
-        {cx - hw, cy + hh},
-        {cx - hw, cy - hh},
-        {cx + hw, cy - hh}
+    // Centro do arco de cada quina, em espaco local (antes da rotacao,
+    // relativo ao centro cx, cy)
+    float localCenters[4][2] = {
+        { hw,  hh},
+        {-hw,  hh},
+        {-hw, -hh},
+        { hw, -hh}
     };
 
     float startAngles[4] = {
@@ -111,6 +114,9 @@ void Objects2D::addRoundedRectangle(
         M_PI * 1.5f
     };
 
+    float cosA = std::cos(angle);
+    float sinA = std::sin(angle);
+
     unsigned int borderStart = v.size() / 3;
 
     for (int corner = 0; corner < 4; ++corner) {
@@ -118,16 +124,18 @@ void Objects2D::addRoundedRectangle(
             float t = static_cast<float>(i) / cornerSegments;
             float ang = startAngles[corner] + t * M_PI * 0.5f;
 
-            v.push_back(
-                centers[corner][0] +
-                radius * std::cos(ang)
-            );
+            float lx = localCenters[corner][0] + radius * std::cos(ang);
+            float ly = localCenters[corner][1] + radius * std::sin(ang);
 
-            v.push_back(
-                centers[corner][1] +
-                radius * std::sin(ang)
-            );
+            // Rotaciona o ponto local pelo angulo do retangulo e so entao
+            // translada para a posicao final (cx, cy). Quando angle = 0
+            // (padrao), cosA = 1 e sinA = 0, entao o resultado eh
+            // identico ao retangulo nao rotacionado de antes.
+            float rx = lx * cosA - ly * sinA;
+            float ry = lx * sinA + ly * cosA;
 
+            v.push_back(cx + rx);
+            v.push_back(cy + ry);
             v.push_back(z);
         }
     }
