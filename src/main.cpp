@@ -92,6 +92,15 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
+         // Desenha o chão da cena
+        float floorTrans[16], floorScale[16], floorModel[16];
+        generateTranslationMatrix(0.0f, -0.85f, 0.9f, floorTrans);
+        generateScaleMatrix(1.6f, 0.8f, 1.6f, floorScale);
+        multMatrix(floorTrans, floorScale, floorModel);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, floorModel);
+        glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
+        floor.mesh->draw();
+        
         // Renderização da árvore
         float treeTrans[16], treeScale[16], treeRotX[16], treeRotY[16];
         float treeModel[16], tempTree[16], tempTree1[16];
@@ -123,45 +132,20 @@ int main() {
 
         boneco.draw(shaderProgram, snowmanModel, modelLoc, colorLoc);
 
-        // Renderização do biscoito
-        float biscuitTrans[16], biscuitScale[16], biscuitRot[16];
-        float biscuitModel[16], biscuitTemp[16];
-
-        // Atualizando as variáveis da posição do biscoito
-        generateTranslationMatrix(0.15f, biscoitoPosY, 0.0f, biscuitTrans);
-        generateScaleMatrix(biscoitoScaleVal, biscoitoScaleVal, biscoitoScaleVal, biscuitScale);
-        generateRotationYMatrix(2.7f, biscuitRot);
-
-        multMatrix(biscuitRot, biscuitScale, biscuitTemp);
-        multMatrix(biscuitTrans, biscuitTemp, biscuitModel);
-
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, biscuitModel);
-
-        glUniform4f(colorLoc, 0.85f, 0.639f, 0.392f, 1.0f);
-        biscoito.mesh->draw(biscoito.bodyIndexOffset, biscoito.bodyIndexCount);
-
-        glUniform4f(colorLoc, 0.96f, 0.918f, 0.855f, 1.0f);
-        biscoito.mesh->draw(biscoito.eyesIndexOffset, biscoito.eyesIndexCount);
-
-        glUniform4f(colorLoc, 0.5f, 0.1f, 0.7f, 1.0f);
-        biscoito.mesh->draw(biscoito.buttonsIndexOffset, biscoito.buttonsIndexCount);
-
-        glUniform4f(colorLoc, 0.95f, 0.3f, 0.227f, 1.0f);
-        glLineWidth(2.5f);
-        biscoito.mesh->draw(biscoito.mouthVertexOffset, biscoito.mouthVertexCount, GL_LINE_STRIP);
-
         // Renderização da casa
         float houseTrans[16], houseScale[16], houseRot[16];
         float houseModel[16], houseTemp[16];
 
         generateTranslationMatrix(0.6f, -0.5f, 0.4f, houseTrans);
         generateScaleMatrix(3.4f, 3.4f, 3.4f, houseScale);
-        generateRotationYMatrix(2.338f, houseRot);
+        generateRotationYMatrix(0.3f, houseRot);
 
         multMatrix(houseRot, houseScale, houseTemp);
         multMatrix(houseTrans, houseTemp, houseModel);
 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, houseModel);
+
+        glDisable(GL_DEPTH_TEST);
 
         glUniform4f(colorLoc, 0.96f, 0.9f, 0.58f, 1.0f);
         house.mesh->draw(house.wallIndexOffset, house.wallIndexCount);
@@ -177,6 +161,38 @@ int main() {
 
         glUniform4f(colorLoc, 0.522f, 0.318f, 0.16f, 1.0f);
         house.mesh->draw(house.handleIndexOffset, house.handleIndexCount);
+
+        glEnable(GL_DEPTH_TEST);
+
+        // Renderização do biscoito
+        float biscuitTrans[16], biscuitScale[16], biscuitRot[16];
+        float biscuitModel[16], biscuitTemp[16];
+
+        // Atualizando as variáveis da posição do biscoito
+        generateTranslationMatrix(0.15f, biscoitoPosY, -0.3f, biscuitTrans);
+        generateScaleMatrix(biscoitoScaleVal, biscoitoScaleVal, biscoitoScaleVal, biscuitScale);
+        generateRotationYMatrix(2.7f, biscuitRot);
+
+        multMatrix(biscuitRot, biscuitScale, biscuitTemp);
+        multMatrix(biscuitTrans, biscuitTemp, biscuitModel);
+        
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, biscuitModel);
+
+        glDisable(GL_DEPTH_TEST);
+
+        glUniform4f(colorLoc, 0.85f, 0.639f, 0.392f, 1.0f);
+        biscoito.mesh->draw(biscoito.bodyIndexOffset, biscoito.bodyIndexCount);
+
+        glUniform4f(colorLoc, 0.96f, 0.918f, 0.855f, 1.0f);
+        biscoito.mesh->draw(biscoito.eyesIndexOffset, biscoito.eyesIndexCount);
+
+        glUniform4f(colorLoc, 0.5f, 0.1f, 0.7f, 1.0f);
+        biscoito.mesh->draw(biscoito.buttonsIndexOffset, biscoito.buttonsIndexCount);
+
+        glUniform4f(colorLoc, 0.95f, 0.3f, 0.227f, 1.0f);
+        glLineWidth(2.5f);
+        biscoito.mesh->draw(biscoito.mouthVertexOffset, biscoito.mouthVertexCount, GL_LINE_STRIP);
+        glEnable(GL_DEPTH_TEST);
 
         // Renderiza nuvens
         float cloudTrans[16], cloudScale[16], cloudModel[16];
@@ -201,15 +217,6 @@ int main() {
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, cloudModel);
         glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
         cloudRight.mesh->draw();
-
-        // Desenha o chão da cena
-        float floorTrans[16], floorScale[16], floorModel[16];
-        generateTranslationMatrix(0.0f, -0.85f, 0.9f, floorTrans);
-        generateScaleMatrix(1.6f, 0.8f, 1.6f, floorScale);
-        multMatrix(floorTrans, floorScale, floorModel);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, floorModel);
-        glUniform4f(colorLoc, 0.9f, 0.9f, 0.9f, 1.0f);
-        floor.mesh->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
