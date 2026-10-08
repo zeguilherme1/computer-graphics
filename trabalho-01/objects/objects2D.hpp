@@ -4,6 +4,11 @@
 
 #include <vector>
 
+/*
+    Classe de objetos básicos 2D
+    Essa classe permite gerar círculos, retângulos,
+    retângulos arreondados e triângulos.
+*/
 class Objects2D {
 protected:
     void addCircle(

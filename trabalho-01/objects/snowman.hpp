@@ -7,6 +7,8 @@
 #include "mesh.hpp"
 #include <memory>
 
+
+// Classe responsável pela geração do boneco de neve
 class Snowman {
 public:
     Snowman();

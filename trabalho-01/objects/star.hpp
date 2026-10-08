@@ -4,6 +4,7 @@
 
 #include <vector>
 
+// Classe responsável por gerar a estrela em 2D
 class Star {
 public:
     std::vector<float> vertices;

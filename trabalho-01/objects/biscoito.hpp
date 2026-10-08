@@ -7,6 +7,7 @@
 
 #include <vector>
 
+// Classe responsável por gerar o biscoito em 2D
 class Biscoito : public Objects2D {
 public:
     int bodyIndexOffset;
@@ -24,7 +25,7 @@ public:
     Mesh* mesh;
 
     Biscoito();
-    ~Biscoito();
+    ~Biscoito(); // Destrutor da classe
 };
 
 #endif

@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+// Classe responsável por gerar a árvore de natal
 class Tree {
   public:
     Tree();

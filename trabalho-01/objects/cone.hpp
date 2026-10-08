@@ -3,6 +3,7 @@
 #define CONE_H
 #include <vector>
 
+// Classe responsável por gerar o cone em 3D
 class Cone {
   public:
     std::vector<float> vertices;

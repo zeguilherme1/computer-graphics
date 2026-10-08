@@ -6,6 +6,7 @@
 #include "./objects2D.hpp"
 #include "./mesh.hpp"
 
+// Classe responsável por gerar a casa em 2D
 class House : public Objects2D {
 public:
     std::vector<float> wallVertices;

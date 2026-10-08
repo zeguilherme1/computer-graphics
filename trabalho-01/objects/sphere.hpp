@@ -7,6 +7,7 @@ std::vector<float> generateSphere();
 std::vector<unsigned int> generateSphereIndices();
 std::vector<unsigned int> generateSphereLines();
 
+// Classe responsável pela geração da esfera
 class Sphere {
   public:
     std::vector<float> vertices;

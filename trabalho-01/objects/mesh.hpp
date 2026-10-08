@@ -4,10 +4,14 @@
 
 #include <vector>
 
+/* Classe Mesh para gerenciar as manipulações envolvendo renderizações
+e controle de buffers do OpenGL
+*/
 class Mesh {
 public:
+    // O construtor recebe apenas o array de vertices e indices
     Mesh(
-        const std::vector<float>& vertices,
+        const std::vector<float>& vertices, 
         const std::vector<unsigned int>& indices
     );
 

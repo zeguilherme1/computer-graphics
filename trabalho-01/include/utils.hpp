@@ -2,6 +2,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+// Declarações das nossas funções utilitárias
 void multMatrix(const float a[16], const float b[16], float result[16]);
 
 void generateTranslationMatrix(float tx, float ty, float tz, float result[16]);
