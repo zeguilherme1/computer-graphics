@@ -4,11 +4,17 @@ from OpenGL.GL import *
 
 from engine import window as win, gl_state
 from engine.mesh import Mesh
-from engine.input import process_input
-from engine.transform import model_matrix, view_matrix, projection_matrix, to_np
+from engine.camera import Camera, model as model_matrix
 from shaders.shaders import Shader
 
-WIDTH, HEIGHT = 800, 600  
+WIDTH, HEIGHT = 800, 600
+CASTLE_SCALE = 30.0
+SKY_SCALE = 100.0
+KIRBY_SCALE = 0.3
+KIRBY_POS = (-0.93, -2.05, -2.29)
+BANDANA_DEE_SCALE = 0.3
+BANDANA_DEE_POS = (0.0, -2.1, -2.44)
+
 
 def main():
     window = win.initWindow()
@@ -17,32 +23,92 @@ def main():
     program = shader.getProgram()
 
     gl_state.setup()
-    patrick = Mesh(program, "objects/patrick/patrick.obj",
-                   ["objects/patrick/patrick.png"])
+    glDisable(GL_CULL_FACE)
 
-    state = {"angle": 0.0, "speed": 0.03}
+    # castelo vem do glb_to_obj.py -> sem flip
+    castle = Mesh(program, "objects/peach_v2/castle.obj", flip=False)
+    # céu vem do Blender -> com flip; imagem passada na mão (o .mtl não tem map_Kd)
+    sky = Mesh(program, "objects/sky/untitled.obj",
+               override_texture="objects/sky/Image_0.jpg", flip=True)
+    
+    kirby = Mesh(program, "objects/kirbyv2/untitled.obj", flip=True)
+    
+    bandana_dee = Mesh(program, "objects/bandana_dee/untitled.obj", flip=True)
+
+    camera = Camera(position=(-0.35, -1.82, 10.0))
+    camera.speed = 15.0
+    glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
+    glfw.set_cursor_pos_callback(window, camera.on_mouse)
+    glfw.set_scroll_callback(window, camera.on_scroll)
 
     loc_model = glGetUniformLocation(program, "model")
-    loc_view  = glGetUniformLocation(program, "view")
-    loc_proj  = glGetUniformLocation(program, "projection")
-
-    glUniformMatrix4fv(loc_view, 1, GL_FALSE, to_np(view_matrix(5.0)))
-    glUniformMatrix4fv(loc_proj, 1, GL_FALSE, to_np(projection_matrix(WIDTH, HEIGHT)))
+    loc_view = glGetUniformLocation(program, "view")
+    loc_proj = glGetUniformLocation(program, "projection")
 
     glfw.show_window(window)
-    while not glfw.window_should_close(window):
-        glfw.poll_events()
-        process_input(window, state)
+    last = glfw.get_time()
 
+    def on_key(win_, key, sc, action, mods):
+        if key == glfw.KEY_P and action == glfw.PRESS:
+            p = camera.pos
+            print(f"Camera(position=({p[0]:.2f}, {p[1]:.2f}, {p[2]:.2f}), "
+                  f"yaw={camera.yaw:.1f}, pitch={camera.pitch:.1f})")
+
+    glfw.set_key_callback(window, on_key)
+
+    while not glfw.window_should_close(window):
+        now = glfw.get_time()
+        dt, last = now - last, now
+
+        glfw.poll_events()
+        if glfw.get_key(window, glfw.KEY_ESCAPE) == glfw.PRESS:
+            glfw.set_window_should_close(window, True)
+        camera.process_keyboard(window, dt)
+
+        w, h = glfw.get_framebuffer_size(window)
+        if h == 0:
+            continue
+        glViewport(0, 0, w, h)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        model = model_matrix(state["angle"], scale=0.025)
-        glUniformMatrix4fv(loc_model, 1, GL_FALSE, to_np(model))
+        V = camera.view_matrix()
+        P = camera.projection_matrix(w / h)
 
-        patrick.draw()
+        # --- céu ---
+        V_sky = V.copy()
+        V_sky[:3, 3] = 0.0
+        glDepthMask(GL_FALSE)
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, model_matrix(scale=SKY_SCALE))
+        glUniformMatrix4fv(loc_view, 1, GL_TRUE, V_sky)
+        glUniformMatrix4fv(loc_proj, 1, GL_TRUE, P)
+        sky.draw()
+        glDepthMask(GL_TRUE)
+
+        # --- castelo ---
+        M = model_matrix(angle_deg=0.0, scale=CASTLE_SCALE)
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, M)
+        glUniformMatrix4fv(loc_view, 1, GL_TRUE, V)
+        glUniformMatrix4fv(loc_proj, 1, GL_TRUE, P)
+        castle.draw()
+
+        # --- kirby ---
+        M_kirby = model_matrix(angle_deg=glfw.get_time() * 0.0,  # gira; use 0.0 para ficar parado
+                               scale=KIRBY_SCALE,
+                               translate=KIRBY_POS)
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, M_kirby)
+        kirby.draw()
+        
+        M_bandana_dee = model_matrix(angle_deg=glfw.get_time() * 0.0,  # gira; use 0.0 para ficar parado
+                                       scale=BANDANA_DEE_SCALE,
+                                       translate=BANDANA_DEE_POS)
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, M_bandana_dee)
+        bandana_dee.draw()
+        
+
         glfw.swap_buffers(window)
 
     glfw.terminate()
+
 
 if __name__ == "__main__":
     main()

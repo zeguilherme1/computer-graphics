@@ -1,0 +1,399 @@
+newmtl mat_0
+Kd 1 1 1
+map_Kd tex_0.png
+
+newmtl mat_1
+Kd 1 1 1
+map_Kd tex_1.png
+
+newmtl mat_2
+Kd 1 1 1
+map_Kd tex_2.png
+
+newmtl mat_3
+Kd 1 1 1
+map_Kd tex_3.png
+
+newmtl mat_4
+Kd 1 1 1
+map_Kd tex_4.png
+
+newmtl mat_5
+Kd 1 1 1
+map_Kd tex_5.png
+
+newmtl mat_6
+Kd 1 1 1
+map_Kd tex_6.png
+
+newmtl mat_7
+Kd 1 1 1
+map_Kd tex_7.png
+
+newmtl mat_8
+Kd 0.8 0.8 0.8
+
+newmtl mat_9
+Kd 1 1 1
+map_Kd tex_8.png
+
+newmtl mat_10
+Kd 1 1 1
+map_Kd tex_9.png
+
+newmtl mat_11
+Kd 1 1 1
+map_Kd tex_10.png
+
+newmtl mat_12
+Kd 1 1 1
+map_Kd tex_11.png
+
+newmtl mat_13
+Kd 1 1 1
+map_Kd tex_12.png
+
+newmtl mat_14
+Kd 1 1 1
+map_Kd tex_13.png
+
+newmtl mat_15
+Kd 1 1 1
+map_Kd tex_14.png
+
+newmtl mat_16
+Kd 1 1 1
+map_Kd tex_15.png
+
+newmtl mat_17
+Kd 1 1 1
+map_Kd tex_16.png
+
+newmtl mat_18
+Kd 1 1 1
+map_Kd tex_17.png
+
+newmtl mat_19
+Kd 1 1 1
+map_Kd tex_18.png
+
+newmtl mat_20
+Kd 1 1 1
+map_Kd tex_19.png
+
+newmtl mat_21
+Kd 1 1 1
+map_Kd tex_20.png
+
+newmtl mat_22
+Kd 1 1 1
+map_Kd tex_21.png
+
+newmtl mat_23
+Kd 1 1 1
+map_Kd tex_22.png
+
+newmtl mat_24
+Kd 1 1 1
+map_Kd tex_23.png
+
+newmtl mat_25
+Kd 1 1 1
+map_Kd tex_24.png
+
+newmtl mat_26
+Kd 1 1 1
+map_Kd tex_25.png
+
+newmtl mat_27
+Kd 1 1 1
+map_Kd tex_26.png
+
+newmtl mat_28
+Kd 1 1 1
+map_Kd tex_27.png
+
+newmtl mat_29
+Kd 1 1 1
+map_Kd tex_28.png
+
+newmtl mat_30
+Kd 1 1 1
+map_Kd tex_29.png
+
+newmtl mat_31
+Kd 1 1 1
+map_Kd tex_30.png
+
+newmtl mat_32
+Kd 1 1 1
+map_Kd tex_31.png
+
+newmtl mat_33
+Kd 1 1 1
+map_Kd tex_32.png
+
+newmtl mat_34
+Kd 1 1 1
+map_Kd tex_33.png
+
+newmtl mat_35
+Kd 1 1 1
+map_Kd tex_34.png
+
+newmtl mat_36
+Kd 1 1 1
+map_Kd tex_35.png
+
+newmtl mat_37
+Kd 1 1 1
+map_Kd tex_36.png
+
+newmtl mat_38
+Kd 1 1 1
+map_Kd tex_37.png
+
+newmtl mat_39
+Kd 1 1 1
+map_Kd tex_38.png
+
+newmtl mat_40
+Kd 1 1 1
+map_Kd tex_39.png
+
+newmtl mat_41
+Kd 1 1 1
+map_Kd tex_40.png
+
+newmtl mat_42
+Kd 1 1 1
+map_Kd tex_41.png
+
+newmtl mat_43
+Kd 1 1 1
+map_Kd tex_42.png
+
+newmtl mat_44
+Kd 1 1 1
+map_Kd tex_43.png
+
+newmtl mat_45
+Kd 1 1 1
+map_Kd tex_44.png
+
+newmtl mat_46
+Kd 1 1 1
+map_Kd tex_45.png
+
+newmtl mat_47
+Kd 1 1 1
+map_Kd tex_46.png
+
+newmtl mat_48
+Kd 1 1 1
+map_Kd tex_47.png
+
+newmtl mat_49
+Kd 1 1 1
+map_Kd tex_48.png
+
+newmtl mat_50
+Kd 1 1 1
+map_Kd tex_49.png
+
+newmtl mat_51
+Kd 1 1 1
+map_Kd tex_50.png
+
+newmtl mat_52
+Kd 1 1 1
+map_Kd tex_51.png
+
+newmtl mat_53
+Kd 1 1 1
+map_Kd tex_52.png
+
+newmtl mat_54
+Kd 1 1 1
+map_Kd tex_53.png
+
+newmtl mat_55
+Kd 1 1 1
+map_Kd tex_54.png
+
+newmtl mat_56
+Kd 1 1 1
+map_Kd tex_55.png
+
+newmtl mat_57
+Kd 1 1 1
+map_Kd tex_56.png
+
+newmtl mat_58
+Kd 1 1 1
+map_Kd tex_57.png
+
+newmtl mat_59
+Kd 1 1 1
+map_Kd tex_58.png
+
+newmtl mat_60
+Kd 1 1 1
+map_Kd tex_59.png
+
+newmtl mat_61
+Kd 1 1 1
+map_Kd tex_60.png
+
+newmtl mat_62
+Kd 1 1 1
+map_Kd tex_61.png
+
+newmtl mat_63
+Kd 1 1 1
+map_Kd tex_62.png
+
+newmtl mat_64
+Kd 1 1 1
+map_Kd tex_63.png
+
+newmtl mat_65
+Kd 1 1 1
+map_Kd tex_64.png
+
+newmtl mat_66
+Kd 1 1 1
+map_Kd tex_65.png
+
+newmtl mat_67
+Kd 1 1 1
+map_Kd tex_66.png
+
+newmtl mat_68
+Kd 1 1 1
+map_Kd tex_67.png
+
+newmtl mat_69
+Kd 1 1 1
+map_Kd tex_68.png
+
+newmtl mat_70
+Kd 1 1 1
+map_Kd tex_69.png
+
+newmtl mat_71
+Kd 1 1 1
+map_Kd tex_70.png
+
+newmtl mat_72
+Kd 1 1 1
+map_Kd tex_71.png
+
+newmtl mat_73
+Kd 1 1 1
+map_Kd tex_72.png
+
+newmtl mat_74
+Kd 1 1 1
+map_Kd tex_73.png
+
+newmtl mat_75
+Kd 1 1 1
+map_Kd tex_74.png
+
+newmtl mat_76
+Kd 1 1 1
+map_Kd tex_75.png
+
+newmtl mat_77
+Kd 1 1 1
+map_Kd tex_76.png
+
+newmtl mat_78
+Kd 1 1 1
+map_Kd tex_77.png
+
+newmtl mat_79
+Kd 1 1 1
+map_Kd tex_78.png
+
+newmtl mat_80
+Kd 1 1 1
+map_Kd tex_79.png
+
+newmtl mat_81
+Kd 1 1 1
+map_Kd tex_80.png
+
+newmtl mat_82
+Kd 1 1 1
+map_Kd tex_81.png
+
+newmtl mat_83
+Kd 1 1 1
+map_Kd tex_82.png
+
+newmtl mat_84
+Kd 1 1 1
+map_Kd tex_83.png
+
+newmtl mat_85
+Kd 1 1 1
+map_Kd tex_84.png
+
+newmtl mat_86
+Kd 1 1 1
+map_Kd tex_85.png
+
+newmtl mat_87
+Kd 1 1 1
+map_Kd tex_86.png
+
+newmtl mat_88
+Kd 1 1 1
+map_Kd tex_87.png
+
+newmtl mat_89
+Kd 1 1 1
+map_Kd tex_88.png
+
+newmtl mat_90
+Kd 1 1 1
+map_Kd tex_89.png
+
+newmtl mat_91
+Kd 1 1 1
+map_Kd tex_90.png
+
+newmtl mat_92
+Kd 1 1 1
+map_Kd tex_91.png
+
+newmtl mat_93
+Kd 1 1 1
+map_Kd tex_92.png
+
+newmtl mat_94
+Kd 1 1 1
+map_Kd tex_93.png
+
+newmtl mat_95
+Kd 1 1 1
+map_Kd tex_94.png
+
+newmtl mat_96
+Kd 1 1 1
+map_Kd tex_95.png
+
+newmtl mat_97
+Kd 1 1 1
+map_Kd tex_96.png
+
+newmtl mat_98
+Kd 1 1 1
+map_Kd tex_97.png
+
+newmtl mat_99
+Kd 1 1 1
+map_Kd tex_98.png
+

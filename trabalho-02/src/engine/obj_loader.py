@@ -1,92 +1,136 @@
+import os
+import numpy as np
 from OpenGL.GL import *
 from PIL import Image
 
-global vertices_list
-vertices_list = []
-global textures_coord_list
-textures_coord_list = []
 
-def circular_sliding_window_of_three(arr):
-        if len(arr) == 3:
-            return arr
-        circular_arr = arr + [arr[0]]
-        result = []
-        for i in range(len(circular_arr) - 2):
-            result.extend(circular_arr[i:i+3])
-        return result
-
-def load_model_from_file(filename):
-    objects = {}
-    vertices = []
-    texture_coords = []
-    faces = []
-
-    material = None
-
-    for line in open(filename, "r"):
-        if line.startswith('#'): continue
-        values = line.split()
-        if not values: continue
-
-        if values[0] == 'v':
-            vertices.append(values[1:4])
-
-        elif values[0] == 'vt':
-            texture_coords.append(values[1:3])
-
-        elif values[0] in ('usemtl', 'usemat'):
-            material = values[1]
-        elif values[0] == 'f':
-            face = []
-            face_texture = []
-            for v in values[1:]:
-                w = v.split('/')
-                face.append(int(w[0]))
-                if len(w) >= 2 and len(w[1]) > 0:
-                    face_texture.append(int(w[1]))
-                else:
-                    face_texture.append(0)
-
-            faces.append((face, face_texture, material))
-
-    model = {}
-    model['vertices'] = vertices
-    model['texture'] = texture_coords
-    model['faces'] = faces
-
-    return model
+def parse_mtl(mtl_path):
+    mats, cur = {}, None
+    if not os.path.exists(mtl_path):
+        return mats
+    for line in open(mtl_path, "r"):
+        v = line.split()
+        if not v:
+            continue
+        if v[0] == "newmtl":
+            cur = v[1]
+            mats[cur] = {"map": None, "kd": (1.0, 1.0, 1.0)}
+        elif v[0] == "Kd" and cur:
+            mats[cur]["kd"] = tuple(float(x) for x in v[1:4])
+        elif v[0] == "map_Kd" and cur:
+            mats[cur]["map"] = v[-1]
+    return mats
 
 
-def load_texture_from_file(texture_id, img_textura):
-    glBindTexture(GL_TEXTURE_2D, texture_id)
+def find_texture(base_dir, name):
+    name = os.path.basename(name.replace("\\", "/"))
+    for sub in ("", "textures"):
+        p = os.path.join(base_dir, sub, name)
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def load_obj(path, normalize=True):
+    base_dir = os.path.dirname(path)
+    V, VT = [], []
+    by_mat = {}
+    mtllib, material = None, None
+
+    for line in open(path, "r"):
+        if line.startswith("#"):
+            continue
+        v = line.split()
+        if not v:
+            continue
+
+        if v[0] == "v":
+            V.append([float(x) for x in v[1:4]])
+        elif v[0] == "vt":
+            VT.append([float(x) for x in v[1:3]])
+        elif v[0] == "mtllib":
+            mtllib = v[1]
+        elif v[0] in ("usemtl", "usemat"):
+            material = v[1]
+        elif v[0] == "f":
+            idx = []
+            for tok in v[1:]:
+                w = tok.split("/")
+                vi = int(w[0])
+                vi = vi - 1 if vi > 0 else len(V) + vi
+                ti = None
+                if len(w) > 1 and w[1]:
+                    t = int(w[1])
+                    ti = t - 1 if t > 0 else len(VT) + t
+                idx.append((vi, ti))
+
+            lst = by_mat.setdefault(material, [])
+            for i in range(1, len(idx) - 1):
+                for k in (idx[0], idx[i], idx[i + 1]):
+                    pos = V[k[0]]
+                    uv = VT[k[1]] if k[1] is not None else [0.0, 0.0]
+                    lst.append((pos, uv))
+
+    positions, uvs, groups = [], [], []
+    for mat, verts in by_mat.items():
+        start = len(positions)
+        for pos, uv in verts:
+            positions.append(pos)
+            uvs.append(uv)
+        groups.append((mat, start, len(verts)))
+
+    positions = np.array(positions, dtype=np.float32)
+    uvs = np.array(uvs, dtype=np.float32)
+
+    if normalize and len(positions):
+        mn, mx = positions.min(axis=0), positions.max(axis=0)
+        center = (mn + mx) / 2.0
+        size = (mx - mn).max()
+        positions = (positions - center) / size
+
+    materials = {}
+    if mtllib:
+        materials = parse_mtl(os.path.join(base_dir, mtllib))
+
+    tex_paths = {}
+    for mat, _, _ in groups:
+        m = materials.get(mat)
+        if m and m["map"]:
+            p = find_texture(base_dir, m["map"])
+            tex_paths[mat] = p if p else m["kd"]
+        elif m:
+            tex_paths[mat] = m["kd"]
+        else:
+            tex_paths[mat] = None
+
+    return positions, uvs, groups, tex_paths
+
+
+def load_texture(path, flip=True):
+    """path: caminho de imagem, tupla (r,g,b) ou None (branco).
+    flip=True  -> modelos vindos do Blender
+    flip=False -> modelos gerados pelo glb_to_obj.py"""
+    tex = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, tex)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    img = Image.open(img_textura)
-    img_width = img.size[0]
-    img_height = img.size[1]
-    image_data = img.tobytes("raw", "RGB", 0, -1)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
-    
-def load_obj_and_texture(objFile, texturesList):
-    modelo = load_model_from_file(objFile)
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
 
-    initial_vertex = len(vertices_list)
-    print('Processando modelo {}. Vertice inicial: {}'.format(objFile, len(vertices_list)))
-    faces_visited = []
-    for face in modelo['faces']:
-        if face[2] not in faces_visited:
-            faces_visited.append(face[2])
-        for vertice_id in circular_sliding_window_of_three(face[0]):
-            vertices_list.append(modelo['vertices'][vertice_id - 1])
-        for texture_id in circular_sliding_window_of_three(face[1]):
-            textures_coord_list.append(modelo['texture'][texture_id - 1])
+    if path is None:
+        path = (1.0, 1.0, 1.0)
+    if isinstance(path, tuple):                    # cor sólida -> textura 1x1
+        rgba = bytes([int(max(0.0, min(1.0, c)) * 255) for c in path] + [255])
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE, rgba)
+        return tex
 
-    final_vertex = len(vertices_list)
-    print('Processando modelo {}. Vertice final: {}'.format(objFile, len(vertices_list)))
-
-    for id in range(len(texturesList)):
-        load_texture_from_file(id, texturesList[id])
-
-    return initial_vertex, final_vertex - initial_vertex
+    img = Image.open(path).convert("RGBA")
+    data = img.tobytes("raw", "RGBA", 0, -1 if flip else 1)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width, img.height, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, data)
+    glGenerateMipmap(GL_TEXTURE_2D)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    return tex
