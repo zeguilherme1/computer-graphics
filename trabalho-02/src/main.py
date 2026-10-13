@@ -14,7 +14,12 @@ KIRBY_SCALE = 0.3
 KIRBY_POS = (-0.93, -2.05, -2.29)
 BANDANA_DEE_SCALE = 0.3
 BANDANA_DEE_POS = (0.0, -2.1, -2.44)
-
+STEVE_SCALE = 0.3
+STEVE_POS = (-0.33, -1.5, -3.38)
+PIKACHU_SCALE = 0.6
+PIKACHU_POS = (-0.58, -2.01, 5.44)
+YOSHI_SCALE = 0.3
+YOSHI_POS = (-0.14, -2.08, 8.08)
 
 def main():
     window = win.initWindow()
@@ -34,6 +39,14 @@ def main():
     kirby = Mesh(program, "objects/kirbyv2/untitled.obj", flip=True)
     
     bandana_dee = Mesh(program, "objects/bandana_dee/untitled.obj", flip=True)
+    
+    steve = Mesh(program, "objects/steve/untitled.obj",
+             override_texture="objects/steve/Image_0.png", flip=True)
+    
+    pikachu = Mesh(program, "objects/pikachu/untitled.obj", flip=True)
+    
+    yoshi = Mesh(program, "objects/yoshi/untitled.obj", flip=True)
+    
 
     camera = Camera(position=(-0.35, -1.82, 10.0))
     camera.speed = 15.0
@@ -104,7 +117,25 @@ def main():
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, M_bandana_dee)
         bandana_dee.draw()
         
-
+        M_steve = model_matrix(angle_deg=glfw.get_time() * 0.0,  # gira; use 0.0 para ficar parado
+                                               scale=STEVE_SCALE,
+                                               translate=STEVE_POS)
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, M_steve)
+        steve.draw()
+        
+        M_pikachu = model_matrix(angle_deg=glfw.get_time() * 0.0,  # gira; use 0.0 para ficar parado
+                                                    scale=PIKACHU_SCALE,
+                                                    translate=PIKACHU_POS)
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, M_pikachu)
+        pikachu.draw()
+        
+        M_yoshi = model_matrix(angle_deg=glfw.get_time() * 0.0,  # gira; use 0.0 para ficar parado
+                                                    scale=YOSHI_SCALE,
+                                                    translate=YOSHI_POS)
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, M_yoshi)
+        yoshi.draw()
+        
+        
         glfw.swap_buffers(window)
 
     glfw.terminate()
