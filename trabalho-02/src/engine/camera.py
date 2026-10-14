@@ -47,7 +47,7 @@ class Camera:
         self.pos = np.array(position, dtype=np.float32)
         self.yaw, self.pitch = yaw, pitch
         self.fov = 60.0
-        self.speed = 2.5
+        self.speed = 2
         self.sensitivity = 0.1
         self.up = np.array([0.0, 1.0, 0.0], dtype=np.float32)
         self._last = None

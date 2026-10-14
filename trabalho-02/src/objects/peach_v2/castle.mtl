@@ -230,8 +230,7 @@ Kd 1 1 1
 map_Kd tex_56.png
 
 newmtl mat_58
-Kd 1 1 1
-map_Kd tex_57.png
+Kd 1 0 0
 
 newmtl mat_59
 Kd 1 1 1
@@ -246,8 +245,7 @@ Kd 1 1 1
 map_Kd tex_60.png
 
 newmtl mat_62
-Kd 1 1 1
-map_Kd tex_61.png
+Kd 0 0 1
 
 newmtl mat_63
 Kd 1 1 1
@@ -278,12 +276,10 @@ Kd 1 1 1
 map_Kd tex_68.png
 
 newmtl mat_70
-Kd 1 1 1
-map_Kd tex_69.png
+Kd 1 1 0
 
 newmtl mat_71
-Kd 1 1 1
-map_Kd tex_70.png
+Kd 0 1 1
 
 newmtl mat_72
 Kd 1 1 1
@@ -298,8 +294,7 @@ Kd 1 1 1
 map_Kd tex_73.png
 
 newmtl mat_75
-Kd 1 1 1
-map_Kd tex_74.png
+Kd 1 0 1
 
 newmtl mat_76
 Kd 1 1 1
@@ -363,7 +358,6 @@ map_Kd tex_89.png
 
 newmtl mat_91
 Kd 1 1 1
-map_Kd tex_90.png
 
 newmtl mat_92
 Kd 1 1 1

@@ -1,80 +1,80 @@
+
 from OpenGL.GL import *
 
-class Shader:
-    def __init__(self, vertexPath: str, fragmentPath: str):
-        # 1. retrieve the vertex/fragment source code from filePath
-        try:
-            # open files
-            vShaderFile = open(vertexPath)
-            fShaderFile = open(fragmentPath)
-            
-            # read file's buffer contents into strings
-            vertexCode = vShaderFile.read()
-            fragmentCode = fShaderFile.read()
-            # close file handlers
-            vShaderFile.close()
-            fShaderFile.close()
 
-            # 2. compile shaders
-            # vertex shader
+class Shader:
+    """Gerencia a compilação e o uso dos shaders"""
+
+    def __init__(self, vertexPath: str, fragmentPath: str):
+        try:
+            # Lê os códigos dos shaders
+            with open(vertexPath, "r") as v_file:
+                vertexCode = v_file.read()
+
+            with open(fragmentPath, "r") as f_file:
+                fragmentCode = f_file.read()
+
+            # Compila o vertex shader
             vertex = glCreateShader(GL_VERTEX_SHADER)
             glShaderSource(vertex, vertexCode)
             glCompileShader(vertex)
             self.checkCompileErrors(vertex, "VERTEX")
-            # fragment Shader
+
+            # Compila o fragment shader
             fragment = glCreateShader(GL_FRAGMENT_SHADER)
             glShaderSource(fragment, fragmentCode)
             glCompileShader(fragment)
             self.checkCompileErrors(fragment, "FRAGMENT")
-            # shader Program
+
+            # Vincula os shaders em um programa
             self.ID = glCreateProgram()
             glAttachShader(self.ID, vertex)
             glAttachShader(self.ID, fragment)
             glLinkProgram(self.ID)
             self.checkCompileErrors(self.ID, "PROGRAM")
-            # delete the shaders as they're linked into our program now and no longer necessary
+
+            # Libera os shaders após a vinculação
             glDeleteShader(vertex)
             glDeleteShader(fragment)
-        
-        except IOError:
-            print("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ")
-            
-        
 
-    # get program
-    # ------------------------------------------------------------------------
+        except IOError as error:
+            raise RuntimeError(
+                f"Não foi possível ler os arquivos dos shaders: {error}"
+            ) from error
+
     def getProgram(self):
         return self.ID
-        
-    # activate the shader
-    # ------------------------------------------------------------------------
+
     def use(self) -> None:
+        # Ativa o programa de shaders
         glUseProgram(self.ID)
-        
-    # utility uniform functions
-    # ------------------------------------------------------------------------
+
     def setBool(self, name: str, value: bool) -> None:
         glUniform1i(glGetUniformLocation(self.ID, name), int(value))
-    # ------------------------------------------------------------------------
+
     def setInt(self, name: str, value: int) -> None:
         glUniform1i(glGetUniformLocation(self.ID, name), value)
-    # ------------------------------------------------------------------------
+
     def setFloat(self, name: str, value: float) -> None:
         glUniform1f(glGetUniformLocation(self.ID, name), value)
 
-    # utility function for checking shader compilation/linking errors.
-    # ------------------------------------------------------------------------
     def checkCompileErrors(self, shader: int, type: str) -> None:
-        if (type != "PROGRAM"):
+        # Verifica erros de compilação ou vinculação
+        if type != "PROGRAM":
             success = glGetShaderiv(shader, GL_COMPILE_STATUS)
-            if (not success):
+
+            if not success:
                 infoLog = glGetShaderInfoLog(shader)
-                print("ERROR::SHADER_COMPILATION_ERROR of type: " + type + "\n" + infoLog.decode() + "\n -- --------------------------------------------------- -- ")
+                print(
+                    f"ERROR::SHADER_COMPILATION_ERROR of type: {type}\n"
+                    f"{infoLog.decode()}"
+                )
         else:
             success = glGetProgramiv(shader, GL_LINK_STATUS)
-            if (not success):
-                infoLog = glGetProgramInfoLog(shader)
-                print("ERROR::PROGRAM_LINKING_ERROR of type: " + type + "\n" + infoLog.decode() + "\n -- --------------------------------------------------- -- ")
 
-                
-    
+            if not success:
+                infoLog = glGetProgramInfoLog(shader)
+                print(
+                    f"ERROR::PROGRAM_LINKING_ERROR of type: {type}\n"
+                    f"{infoLog.decode()}"
+                )
