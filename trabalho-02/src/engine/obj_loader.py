@@ -4,7 +4,6 @@ import numpy as np
 from OpenGL.GL import *
 from PIL import Image
 
-
 def parse_mtl(mtl_path):
     """Lê as cores e texturas dos materiais"""
     mats, cur = {}, None
@@ -31,7 +30,6 @@ def parse_mtl(mtl_path):
 
     return mats
 
-
 def find_texture(base_dir, name):
     """Procura a imagem da textura nos diretórios do modelo"""
     name = os.path.basename(name.replace("\\", "/"))
@@ -43,7 +41,6 @@ def find_texture(base_dir, name):
             return p
 
     return None
-
 
 def load_obj(path, normalize=True):
     """Carrega vértices, coordenadas de textura e materiais do OBJ"""

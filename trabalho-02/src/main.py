@@ -1,4 +1,3 @@
-
 import glfw
 import numpy as np
 from OpenGL.GL import *
@@ -8,7 +7,10 @@ from engine.mesh import Mesh
 from engine import obj_loader as ld
 from engine.bounds import ground_height
 from engine.camera import Camera, model as model_matrix
+from engine.actor import Actor
+from engine.utils import clamp
 from shaders.shaders import Shader
+
 
 WIDTH, HEIGHT = 800, 600
 CASTLE_SCALE = 30.0
@@ -18,83 +20,13 @@ SKY_SCALE = 100.0
 START_POS = (-0.35, -1.82, 10.0)
 EDGE_MARGIN = 1.0
 EYE_HEIGHT = 0.2
-LIMIT_X_OVERRIDE = None
-LIMIT_Z_OVERRIDE = None
-FLOOR_Y_OVERRIDE = None
-CEILING_Y_OVERRIDE = None
+LIMIT_X_OVERRIDE = (-2.2, 2.2)
+LIMIT_Z_OVERRIDE = (-10.0, 13.0)
+FLOOR_Y_OVERRIDE = 0.1
+CEILING_Y_OVERRIDE = 0.2
 
-# Velocidades das transformações
-MOVE_SPEED = 2.0
-ROTATE_SPEED = 90.0
-SCALE_RATE = 1.0
-MOVE_LIMIT = 6.0
-SCALE_MIN, SCALE_MAX = 0.3, 3.0
-
+# Eixos usados na configuração dos atores
 X, Y, Z = 0, 1, 2
-
-
-def clamp(value, lo, hi):
-    # Mantém o valor dentro do intervalo permitido
-    return max(lo, min(hi, value))
-
-
-def key_dir(window, k_neg, k_pos):
-    # Retorna a direção indicada pelas teclas pressionadas
-    d = 0
-    if glfw.get_key(window, k_neg) == glfw.PRESS:
-        d -= 1
-    if glfw.get_key(window, k_pos) == glfw.PRESS:
-        d += 1
-    return d
-
-
-class Actor:
-    """Representa um modelo com transformações independentes"""
-
-    def __init__(self, mesh, base_pos, base_scale, move=None, rotate=None, scale=None,
-                 move_range=(-MOVE_LIMIT, MOVE_LIMIT)):
-        self.mesh = mesh
-        self.base_pos = base_pos
-        self.base_scale = base_scale
-        self.move, self.rotate, self.scale = move, rotate, scale
-        self.move_range = move_range
-        self.offset = [0.0, 0.0, 0.0]
-        self.angle = 0.0
-        self.scale_mult = 1.0
-
-    def update(self, window, dt):
-        # Atualiza a posição no eixo configurado
-        if self.move:
-            axis, k_neg, k_pos = self.move
-            self.offset[axis] = clamp(
-                self.offset[axis] + key_dir(window, k_neg, k_pos) * MOVE_SPEED * dt,
-                *self.move_range)
-
-        # Atualiza a rotação no eixo Y
-        if self.rotate:
-            self.angle = (
-                self.angle + key_dir(window, *self.rotate) * ROTATE_SPEED * dt
-            ) % 360.0
-
-        # Atualiza a escala de forma uniforme
-        if self.scale:
-            self.scale_mult = clamp(
-                self.scale_mult * (
-                    1.0 + SCALE_RATE * dt * key_dir(window, *self.scale)
-                ),
-                SCALE_MIN, SCALE_MAX)
-
-    def draw(self, loc_model):
-        # Combina a posição inicial com o deslocamento atual
-        pos = tuple(b + o for b, o in zip(self.base_pos, self.offset))
-        M = model_matrix(
-            angle_deg=self.angle,
-            scale=self.base_scale * self.scale_mult,
-            translate=pos
-        )
-        glUniformMatrix4fv(loc_model, 1, GL_TRUE, M)
-        self.mesh.draw()
-
 
 def main():
     window = win.initWindow()
@@ -103,7 +35,6 @@ def main():
     program = shader.getProgram()
 
     gl_state.setup()
-    glDisable(GL_CULL_FACE)
 
     # Carrega o castelo sem inverter as texturas
     castle = Mesh(program, "objects/peach_v2/castle.obj", flip=False)
@@ -166,7 +97,7 @@ def main():
         # Peach pode se mover em Z e girar
         Actor(
             Mesh(program, "objects/peach/peach.obj", flip=True),
-            (-0.46, -2.0, 8.8), 0.15,
+            (-0.46, -2.05, 8.8), 0.2,
             move=(Z, glfw.KEY_9, glfw.KEY_0),
             rotate=(glfw.KEY_T, glfw.KEY_G)
         ),
@@ -211,12 +142,6 @@ def main():
         CEILING_Y_OVERRIDE if CEILING_Y_OVERRIDE is not None else float(hi[1])
     )
 
-    print(
-        f"Limites da câmera: x={limit_x[0]:.2f}..{limit_x[1]:.2f}  "
-        f"y={limit_y[0]:.2f}..{limit_y[1]:.2f}  "
-        f"z={limit_z[0]:.2f}..{limit_z[1]:.2f}"
-    )
-
     camera = Camera(position=START_POS)
     camera.speed = 15.0
 
@@ -237,30 +162,24 @@ def main():
     def on_key(win_, key, sc, action, mods):
         if action != glfw.PRESS:
             return
-
-        if key == glfw.KEY_Y:
-            # Exibe a posição e a orientação atuais da câmera
-            p = camera.pos
-            print(
-                f"Camera(position=({p[0]:.2f}, {p[1]:.2f}, {p[2]:.2f}), "
-                f"yaw={camera.yaw:.1f}, pitch={camera.pitch:.1f})"
-            )
-
-        elif key == glfw.KEY_P:
+        if key == glfw.KEY_P:
             # Alterna entre a malha preenchida e o modo de linhas
             state["wireframe"] = not state["wireframe"]
             glPolygonMode(
                 GL_FRONT_AND_BACK,
                 GL_LINE if state["wireframe"] else GL_FILL
             )
+        elif key == glfw.KEY_Y:
+            # Imprime a posição atual da câmera
+            print("Câmera:", tuple(round(float(v), 2) for v in camera.pos))
 
     glfw.set_key_callback(window, on_key)
 
     print(
         "Controles: WASD/mouse = câmera | P = malha | Y = imprime câmera\n"
-        "  Kirby: J/L move, -/= escala | Bandana Dee: I/K move, U/O gira\n"
-        "  Steve: N/M move | Pikachu: 1/2 sobe/desce, 3/4 gira\n"
-        "  Yoshi: 5/6 move, 7/8 gira | Peach: 9/0 move (Z), T/G gira"
+        "Kirby: J/L move, -/= escala | Bandana Dee: I/K move, U/O gira\n"
+        "Steve: N/M move | Pikachu: 1/2 sobe/desce, 3/4 gira\n"
+        "Yoshi: 5/6 move, 7/8 gira | Peach: 9/0 move (Z), T/G gira"
     )
 
     while not glfw.window_should_close(window):
@@ -297,7 +216,7 @@ def main():
         V_sky = V.copy()
         V_sky[:3, 3] = 0.0
 
-      
+        # Desenha o céu sem escrever na profundidade
         glDepthMask(GL_FALSE)
         glUniformMatrix4fv(
             loc_model, 1, GL_TRUE, model_matrix(scale=SKY_SCALE)

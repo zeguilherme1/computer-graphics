@@ -4,14 +4,11 @@ import numpy as np
 from OpenGL.GL import *
 from engine import obj_loader as ld
 
-
 class Mesh:
     """Gerencia os dados e a renderização de uma malha"""
 
     def __init__(self, program, obj_path, override_texture=None, flip=True):
         positions, uvs, groups, tex_paths = ld.load_obj(obj_path)
-
-        print(f"{obj_path}: {len(positions)} vértices, {len(groups)} materiais")
 
         if not override_texture:
             # Identifica materiais sem imagem de textura
@@ -19,7 +16,6 @@ class Mesh:
                 m for m, p in tex_paths.items()
                 if p is None or isinstance(p, tuple)
             ]
-            print(f"materiais sem imagem: {len(sem_textura)}", sem_textura[:10])
 
         self.groups = []
         cache = {}
