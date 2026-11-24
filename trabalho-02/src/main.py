@@ -2,13 +2,12 @@ import glfw
 import numpy as np
 from OpenGL.GL import *
 
-from engine import window as win, gl_state
+from engine import window as win
 from engine.mesh import Mesh
 from engine import obj_loader as ld
-from engine.bounds import ground_height
 from engine.camera import Camera, model as model_matrix
 from engine.actor import Actor
-from engine.utils import clamp
+from engine.utils import clamp, gl_state_setup, ground_height
 from shaders.shaders import Shader
 
 
@@ -34,7 +33,7 @@ def main():
     shader.use()
     program = shader.getProgram()
 
-    gl_state.setup()
+    gl_state_setup();
 
     # Carrega o castelo sem inverter as texturas
     castle = Mesh(program, "objects/peach_v2/castle.obj", flip=False)

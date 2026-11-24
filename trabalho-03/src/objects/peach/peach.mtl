@@ -1,0 +1,35 @@
+newmtl blinn2
+Kd 1 1 1
+map_Kd textures/PeachTexA.png
+
+newmtl blinn3
+Kd 1 1 1
+map_Kd textures/PeachTexB.png
+
+newmtl blinn4
+Kd 1 1 1
+map_Kd textures/PeachTexB.png
+
+newmtl lambert92
+Kd 1 1 1
+map_Kd textures/PeachTexA.png
+
+newmtl lambert98
+Kd 1 1 1
+map_Kd textures/PeachTexB.png
+
+newmtl PeachEyeL
+Kd 1 1 1
+map_Kd textures/PeachTexEyeWhite.png
+
+newmtl PeachEyeL.001
+Kd 1 1 1
+map_Kd textures/PeachTexEyeIris.png
+
+newmtl PeachEyeL.002
+Kd 1 1 1
+map_Kd textures/PeachTexEyeHigh.png
+
+newmtl PeachEyeL.003
+Kd 1 1 1
+map_Kd textures/PeachTexEyeLid.00.png
